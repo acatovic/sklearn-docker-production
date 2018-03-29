@@ -1,3 +1,32 @@
+###############################################################################
+# Dockerfile for lightweight production-ready ML applications using sklearn.
+#
+# Armin Catovic, armin.catovic@ericsson.com
+#                armin.van.catovic@gmail.com
+#
+# The guiding principle is to only include what is needed in production. You
+# can further trim the size of the image by removing unused sklearn, numpy and
+# scipy modules/directories (e.g. sklearn's datasets directory). It's
+# recommended to run Python's execution trace (python -m trace ...) on your
+# application to find out which modules are used, and remove the rest.
+#
+# Key features of this build script:
+# ----------------------------------
+#
+# * Alpine/busybox base image - less than 4 MiB!
+# * tini as the "init" process - important for zombie process cleanup
+# * APK with --no-cache flag so we don't cache anything within the image itself
+# * Libs taken care of "by-hand" so we don't have any duplicate or unnecessary
+#   libs
+# * Strip tool to remove debug and symbol info from ELF files, i.e. libs
+#   and binaries
+# * Removed any intermediate packages such as gcc, binutils, etc, that are
+#   needed for building Python packages, but not needed once finished
+# * Removed Python metadata, i.e. egg-info and dist-info
+# * Removed unit tests and documentation from Python modules
+#
+###############################################################################
+
 FROM alpine:3.3
 
 RUN apk add --no-cache curl tar && \
